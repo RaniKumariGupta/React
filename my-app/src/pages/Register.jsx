@@ -1,17 +1,31 @@
-import React from 'react'
+import React,{useState} from 'react'
+// import React from 'react'
 import {Formik,Form,Field,ErrorMessage} from 'formik'
 import * as Yup from 'yup'
+import {signup} from '../auth/authIndex'
 
 const Register = () => {
+    const [error,setError]=useState('')
+    const [success,setSuccess]=useState(false)
+
+    //to show error message
+    const showError=()=>(
+        error && <div className='alert alert danger'>
+            {error}
+        </div>
+    )
+    //to show success message
+    const showSuccess=()=>(
+        success && <div className='alert alert-success'>
+            account created successfully
+        </div>
+    )
   return (
     <Formik 
-        initialValues={{firstname:'',lastname:'',email:'',password:'',cpassword:''}}
+        initialValues={{name:'',email:'',password:'',cpassword:''}}
         validationSchema={Yup.object({
-            firstname:Yup.string()
-            .required('first name is mandatory')
-            .max(20,'20 character or less'),
-            lastname:Yup.string()
-            .required('last name is mandatory')
+            name:Yup.string()
+            .required('name is mandatory')
             .max(20,'20 character or less'),
             email:Yup.string()
             .required('email is mandatory')
@@ -24,25 +38,40 @@ const Register = () => {
             .oneOf([Yup.ref('password'),null],'password and confirm password doesnot match')
            
         })}
+        onSubmit={(values,{setSubmitting,resetForm})=>{
+            setSubmitting(true)
+            signup(values)
+            .then(data=>{
+                if(data.error){
+                    setError(data.error)
+                }
+                else{
+                    setSuccess(true)
+                    resetForm()
+                    setError('')
+                }
+                setSubmitting(false)
+            })
+            .catch(err=>{
+                console.log(err)
+                setSubmitting(false)
+            })
+        }}
     >
       <div className='container my-5'>
         <div className='row d-flex justify-content-center'>
             <div className='col-md-5 shadow p-3'>
                <Form>
+                {showError()}
+                {showSuccess()}
                 <div className="mb-2">
-                    <label htmlFor="firstname">FirstName</label>
-                    <Field type='text' name='firstname' id='firstname' className='form-control'/>
-                    <ErrorMessage name='firstname'>
+                    <label htmlFor="fname">FullName</label>
+                    <Field type='text' name='name' id='fname' className='form-control'/>
+                    <ErrorMessage name='name'>
                         {msg => <div style={{color:'red'}}>{msg}</div>}
                     </ErrorMessage>
                 </div>
-                <div className="mb-2">
-                    <label htmlFor="lastname">LastName</label>
-                    <Field type='text' name='lastname' id='lastname' className='form-control'/>
-                    <ErrorMessage name='lastname'>
-                        {msg => <div style={{color:'red'}}>{msg}</div>}
-                    </ErrorMessage>
-                </div>
+              
                 <div className="mb-2">
                     <label htmlFor="email">Email</label>
                     <Field type='email' name='email' id='email' className='form-control'/>

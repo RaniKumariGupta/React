@@ -2,6 +2,7 @@ import React,{useState,useEffect, Fragment} from 'react'
 import { ToastContainer, toast } from 'react-toastify';
   import 'react-toastify/dist/ReactToastify.css';
   import {FaTrash} from 'react-icons/fa'
+import { IMG_URL } from '../config';
 
 
 const Cart = () => {
@@ -25,7 +26,7 @@ const Cart = () => {
     //increase cart quantity
     const increaseQty=id=>{
         const updateProducts=products.map(item=>{
-            if(item.id===id){
+            if(item.id===id && item.quantity<item.stock){
                 return{...item,quantity:item.quantity+1}
             }
             return item
@@ -65,13 +66,13 @@ const Cart = () => {
                             <hr/>
                             <div className='row d-flex align-items-center'>
                                 <div className="col-2">
-                                    <img src={item.image} alt={item.title} width={'100'} />
+                                    <img src={`${IMG_URL}/${item.image}`} alt={item.title} width={'100'} />
                                 </div>
                                 <div className="col-3">
                                     <span><strong>{item.title}</strong></span>
                                 </div>
                                 <div className="col-3 text-warning">
-                                    ${item.price}
+                                    Rs{item.price}
                                 </div>
                                 <div className="col-3">
                                     <div className="d-flex">
@@ -99,7 +100,7 @@ const Cart = () => {
                         <span><strong>Units:</strong>{products.reduce((total,item)=>total+Number(item.quantity),0)} Units</span>
                         <br/>
                         <span><strong>Total:</strong>
-                         ${products.reduce((total,item)=>total+(item.quantity*item.price),0)}
+                         Rs{products.reduce((total,item)=>total+(item.quantity*item.price),0)}
                         </span>
                          <hr/>
                          <button className='btn btn-warning'>Check Out</button>

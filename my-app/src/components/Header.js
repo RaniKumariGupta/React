@@ -1,7 +1,9 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate} from 'react-router-dom'
+import { isAuthenticated,signout } from '../auth/authIndex'
 
 const Header = () => {
+  const navigate=useNavigate()
   return (
        <>
        <header className="p-3 text-bg-dark">
@@ -22,11 +24,29 @@ const Header = () => {
         <form className="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
           <input type="search" className="form-control form-control-dark text-bg-dark" placeholder="Search..." aria-label="Search"/>
         </form>
+             {isAuthenticated() && isAuthenticated().user.role===1 &&
+              <div className="text-end">
+                <Link to="/admin/dashboard" className="me-2 text-decoration-none text-white">Admin</Link>
+                </div>
+             }
+              {isAuthenticated() && isAuthenticated().user.role===0 &&
+              <div className="text-end">
+                <Link to="/profile" className="me-2 text-decoration-none text-white">Profile</Link>
+                </div>
+             }
+             {!isAuthenticated() &&
+              <div className="text-end">
+              <Link to="/login" className="btn btn-outline-light me-2">Login</Link>
+              <Link to="/signup" className="btn btn-warning">Sign-up</Link>
+               </div>
+             }
+             {isAuthenticated() &&
+             <button className='btn btn-danger' onClick={()=>signout(()=>{
+              navigate ('/login')
+             })}>Logout</button>
 
-        <div className="text-end">
-          <Link to="/login" className="btn btn-outline-light me-2">Login</Link>
-          <Link to="/signup" className="btn btn-warning">Sign-up</Link>
-        </div>
+             }
+      
       </div>
     </div>
   </header>
